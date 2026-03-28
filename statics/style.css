@@ -1,0 +1,98 @@
+/* Importando uma fonte legal do Google Fonts para dar uma cara mais profissional */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap');
+
+html {
+    height: 100%;
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    /* Empurra o footer pro final da tela se a página tiver pouco conteúdo */
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    min-height: 100dvh;
+    background-color: #f8f9fa; /* Cinza bem claro do bootstrap */
+}
+
+/* Faz a div principal ocupar o espaço restante, empurrando o footer pra baixo */
+.conteudo-principal {
+    flex: 1;
+}
+
+/* Personalização da Navbar da Loja de Eletrônicos */
+.navbar-custom {
+    background-color: #0d253f; /* Azul escuro tech */
+}
+
+.navbar-custom .navbar-brand,
+.navbar-custom .nav-link {
+    color: #ffffff;
+}
+
+.navbar-custom .nav-link:hover {
+    color: #00d2ff; /* Azul ciano no hover */
+}
+
+/* Botão Entrar (outline na navbar escura) — contraste forte */
+.navbar-custom .btn-outline-light {
+    color: #ffffff;
+    border-color: rgba(255, 255, 255, 0.95);
+    border-width: 2px;
+    font-weight: 600;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.35);
+}
+
+.navbar-custom .btn-outline-light:hover,
+.navbar-custom .btn-outline-light:focus {
+    color: #0d253f;
+    background-color: #ffffff;
+    border-color: #ffffff;
+    text-shadow: none;
+}
+
+/* Botão secundário na área principal (ex.: "Já sou cliente") — texto legível */
+main .btn-outline-secondary {
+    color: #1e293b;
+    border-color: #64748b;
+    border-width: 2px;
+    font-weight: 600;
+}
+
+main .btn-outline-secondary:hover,
+main .btn-outline-secondary:focus {
+    color: #ffffff;
+    background-color: #0d253f;
+    border-color: #0d253f;
+}
+
+/* Estilo do Rodapé (Requisito obrigatório) — colado ao fundo da viewport quando há pouco conteúdo */
+.footer-custom {
+    background-color: #1a1a1a; /* Quase preto */
+    color: #cccccc;
+    padding: 20px 0;
+    text-align: center;
+    margin-top: auto;
+    flex-shrink: 0;
+    width: 100%;
+    border-top: 3px solid #00d2ff; /* Linha de destaque em cima do footer */
+}
+
+/* Ajuste sutil para as tabelas do sistema não colarem nas bordas */
+.tabela-container {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+}
+
+/* Estilização da página da equipe (Cards isolados) */
+.card-equipe {
+    transition: transform 0.3s ease;
+    border: none;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+
+.card-equipe:hover {
+    transform: translateY(-5px); /* Efeito de pular um pouquinho ao passar o mouse */
+}
