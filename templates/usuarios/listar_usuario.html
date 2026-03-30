@@ -1,11 +1,14 @@
 {% extends "base.html" %}
 
+<!-- Página de listagem de usuários (GET) -->
 {% block conteudo %}
+<!-- Cabeçalho com título e botão para abrir o formulário de inserção -->
 <div class="d-flex justify-content-between align-items-center mb-4">
     <h2>Gestão de Usuários</h2>
     <a href="{{ url_for('inserir_usuario') }}" class="btn btn-primary">+ Novo Usuário</a>
 </div>
 
+<!-- Container para a tabela (dados simulados vindos de app.py) -->
 <div class="tabela-container">
     <table class="table table-hover table-bordered align-middle">
         <thead class="table-dark">
@@ -18,6 +21,7 @@
             </tr>
         </thead>
         <tbody>
+            <!-- Itera sobre `usuarios` e cria uma linha por registro -->
             {% for u in usuarios %}
             <tr>
                 <td>{{ u.id }}</td>
@@ -25,6 +29,7 @@
                 <td>{{ u.email }}</td>
                 <td><span class="badge bg-secondary">{{ u.perfil }}</span></td>
                 <td class="text-center">
+                    <!-- Botões visuais: a lógica real de editar/excluir não está implementada -->
                     <button class="btn btn-sm btn-outline-primary">Editar</button>
                     <button class="btn btn-sm btn-outline-danger" onclick="return confirmarExclusao();">Excluir</button>
                 </td>

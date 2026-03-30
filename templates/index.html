@@ -1,16 +1,20 @@
 {% extends "base_publica.html" %}
 
+<!-- Conteúdo específico da página inicial (/) -->
 {% block conteudo %}
 <div class="row align-items-center py-5">
     <div class="col-md-6 text-center text-md-start">
+        <!-- Mensagem principal/benefícios do sistema -->
         <h1 class="display-4 fw-bold text-primary mb-3">O melhor da tecnologia num só lugar.</h1>
         <p class="lead text-muted mb-4">A TechStore é o sistema de gestão ideal para a sua loja de eletrônicos. Controle utilizadores, estoque de produtos de ponta e organize as suas categorias com facilidade e rapidez.</p>
         <div class="d-grid gap-2 d-md-flex justify-content-md-start">
+            <!-- CTAs (calls to action) -->
             <a href="{{ url_for('cadastro') }}" class="btn btn-primary btn-lg px-4 me-md-2">Criar Conta Grátis</a>
             <a href="{{ url_for('login') }}" class="btn btn-outline-secondary btn-lg px-4">Já sou cliente</a>
         </div>
     </div>
     <div class="col-md-6 mt-5 mt-md-0">
+        <!-- Cards de categorias/segmentos -->
         <div class="row g-3">
             <div class="col-6">
                 <div class="card bg-light border-0 shadow-sm h-100 p-3 text-center">

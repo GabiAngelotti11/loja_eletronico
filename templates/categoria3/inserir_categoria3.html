@@ -1,24 +1,29 @@
 {% extends "base.html" %}
 
+<!-- Página de inserção de categoria -->
 {% block conteudo %}
 <div class="row justify-content-center">
     <div class="col-md-6">
         <div class="card shadow-sm">
             <div class="card-header bg-dark text-white">
+                <!-- Título do formulário -->
                 <h4 class="mb-0">Criar Categoria</h4>
             </div>
             <div class="card-body">
                 <form action="{{ url_for('inserir_categoria') }}" method="POST">
                     <div class="mb-3">
+                        <!-- Campo obrigatório: nome da categoria -->
                         <label for="nome" class="form-label">Nome da Categoria *</label>
                         <input type="text" class="form-control" id="nome" name="nome" placeholder="Ex: Placas de Vídeo" required>
                     </div>
                     
                     <div class="mb-4">
+                        <!-- Campo opcional: descrição -->
                         <label for="descricao" class="form-label">Descrição Breve</label>
                         <input type="text" class="form-control" id="descricao" name="descricao" placeholder="Para que serve esta categoria?">
                     </div>
 
+                    <!-- Botões: cancelar (vai para listagem) e criar (POST) -->
                     <div class="d-flex justify-content-end gap-2">
                         <a href="{{ url_for('listar_categorias') }}" class="btn btn-secondary">Voltar</a>
                         <button type="submit" class="btn btn-dark">Criar</button>

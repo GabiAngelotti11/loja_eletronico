@@ -1,19 +1,23 @@
 {% extends "base.html" %}
 
+<!-- Página de inserção de novo usuário -->
 {% block conteudo %}
 <div class="row justify-content-center">
     <div class="col-md-8">
         <div class="card shadow-sm">
             <div class="card-header bg-primary text-white">
+                <!-- Título do formulário -->
                 <h4 class="mb-0">Cadastrar Novo Usuário</h4>
             </div>
             <div class="card-body">
                 <form action="{{ url_for('inserir_usuario') }}" method="POST">
                     <div class="row">
+                        <!-- Campo: nome -->
                         <div class="col-md-6 mb-3">
                             <label for="nome" class="form-label">Nome Completo *</label>
                             <input type="text" class="form-control" id="nome" name="nome" placeholder="Nome do utilizador" required>
                         </div>
+                        <!-- Campo: email -->
                         <div class="col-md-6 mb-3">
                             <label for="email" class="form-label">E-mail *</label>
                             <input type="email" class="form-control" id="email" name="email" placeholder="email@empresa.com" required>
@@ -21,20 +25,24 @@
                     </div>
                     
                     <div class="row">
+                        <!-- Campo: perfil (opções simuladas) -->
                         <div class="col-md-6 mb-4">
                             <label for="perfil" class="form-label">Perfil de Acesso</label>
                             <select class="form-select" id="perfil" name="perfil">
+                                <option value="" disabled selected>Selecione um perfil</option>
                                 <option value="Cliente">Cliente</option>
                                 <option value="Vendedor">Vendedor</option>
                                 <option value="Administrador">Administrador</option>
                             </select>
                         </div>
+                        <!-- Campo: senha -->
                         <div class="col-md-6 mb-4">
                             <label for="senha" class="form-label">Senha Inicial *</label>
-                            <input type="password" class="form-control" id="senha" name="senha" required>
+                            <input type="password" class="form-control" id="senha" name="senha" placeholder="Sua senha secreta" required>
                         </div>
                     </div>
 
+                    <!-- Botões do formulário: cancelar (volta) e salvar (POST) -->
                     <div class="d-flex justify-content-end gap-2">
                         <a href="{{ url_for('listar_usuarios') }}" class="btn btn-secondary">Cancelar</a>
                         <button type="submit" class="btn btn-success">Salvar Registo</button>

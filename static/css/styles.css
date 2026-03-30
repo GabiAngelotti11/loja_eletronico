@@ -1,3 +1,12 @@
+/* 
+CSS único do projeto (encontra-se em `static/css/styles.css`).
+Esse arquivo define o visual customizado:
+- Layout (flex) para deixar o footer no final quando há pouco conteúdo
+- Navbar com cores do tema
+- Contraste/legibilidade de botões
+- Estilos auxiliares para tabelas e cards
+*/
+
 /* Importando uma fonte legal do Google Fonts para dar uma cara mais profissional */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap');
 
@@ -96,3 +105,4 @@ main .btn-outline-secondary:focus {
 .card-equipe:hover {
     transform: translateY(-5px); /* Efeito de pular um pouquinho ao passar o mouse */
 }
+

@@ -1,11 +1,13 @@
 {% extends "base.html" %}
 
+<!-- Página de listagem de produtos -->
 {% block conteudo %}
 <div class="d-flex justify-content-between align-items-center mb-4">
     <h2>Catálogo de Produtos</h2>
     <a href="{{ url_for('inserir_produto') }}" class="btn btn-primary">+ Novo Produto</a>
 </div>
 
+<!-- Tabela Bootstrap gerada a partir de `produtos` (lista simulada) -->
 <div class="tabela-container">
     <table class="table table-hover table-bordered align-middle">
         <thead class="table-dark">
@@ -18,12 +20,14 @@
             </tr>
         </thead>
         <tbody>
+            <!-- Itera cada produto para renderizar uma linha -->
             {% for p in produtos %}
             <tr>
                 <td>#{{ p.id }}</td>
                 <td>{{ p.nome }}</td>
                 <td>R$ {{ p.preco }}</td>
                 <td>
+                    <!-- Destaque visual caso o estoque esteja baixo -->
                     {% if p.estoque < 10 %}
                         <span class="text-danger fw-bold">{{ p.estoque }} (Baixo)</span>
                     {% else %}
@@ -31,6 +35,7 @@
                     {% endif %}
                 </td>
                 <td class="text-center">
+                    <!-- Botões visuais (lógica real de editar/excluir não implementada) -->
                     <button class="btn btn-sm btn-outline-primary">Editar</button>
                     <button class="btn btn-sm btn-outline-danger" onclick="return confirmarExclusao();">Excluir</button>
                 </td>
