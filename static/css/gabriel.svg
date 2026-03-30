@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="300" height="300" viewBox="0 0 300 300" role="img" aria-label="Avatar Gabriel Angelotti">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0d253f"/>
+      <stop offset="1" stop-color="#00d2ff"/>
+    </linearGradient>
+  </defs>
+  <rect width="300" height="300" rx="150" fill="url(#bg)"/>
+  <circle cx="150" cy="125" r="55" fill="#ffffff" opacity="0.95"/>
+  <path d="M65 265c18-52 56-78 85-78s67 26 85 78" fill="#ffffff" opacity="0.95"/>
+  <text x="150" y="292" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="18" fill="#0d253f">
+    Gabriel A.
+  </text>
+</svg>

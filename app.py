@@ -6,7 +6,7 @@ Observações:
 - As "rotas protegidas" são apenas simuladas: não há autenticação real.
 """
 
-from flask import Flask, render_template, request, redirect, url_for, flash
+from flask import Flask, render_template, request, redirect, url_for, flash, session
 
 # Instância da aplicação Flask
 app = Flask(__name__)
@@ -66,6 +66,7 @@ def login():
         
         if email and senha:
             # Se os campos foram preenchidos, simula "login" e redireciona.
+            session['logado'] = True
             flash('Login realizado com sucesso!', 'success')
             return redirect(url_for('listar_usuarios'))
         else:
@@ -83,8 +84,17 @@ def cadastro():
         nome = request.form.get('nome')
         email = request.form.get('email')
         senha = request.form.get('senha')
+        confirma_senha = request.form.get('confirma_senha')
         
         # Validação simples dos campos obrigatórios.
+        if not nome or not email or not senha or not confirma_senha:
+            flash('Erro ao cadastrar. Verifique os dados.', 'danger')
+            return render_template('cadastro.html')
+
+        if senha != confirma_senha:
+            flash('As senhas não conferem. Tente novamente.', 'warning')
+            return render_template('cadastro.html')
+
         if nome and email and senha:
             # Se ok, exibe mensagem e manda para login.
             flash('Cadastro realizado! Faça login para continuar.', 'success')
@@ -100,6 +110,7 @@ def cadastro():
 @app.route('/logout')
 def logout():
     # Simula encerramento de sessão e redireciona para login.
+    session.clear()
     flash('Sessão encerrada.', 'info')
     return redirect(url_for('login'))
 
@@ -114,24 +125,80 @@ def logout():
 
 @app.route('/usuarios/listar')
 def listar_usuarios():
-    # Lista usuários simulados.
-    return render_template('usuarios/listar_usuario.html', usuarios=usuarios_db)
+    if not session.get('logado'):
+        flash('Faça login para acessar o sistema.', 'warning')
+        return redirect(url_for('login'))
+    # Lista usuários simulados + usuários gravados na sessão.
+    usuarios_session = session.get('usuarios', [])
+    usuarios = usuarios_db + usuarios_session
+    return render_template('usuarios/listar_usuarios.html', usuarios=usuarios)
+
+@app.route('/usuarios/excluir/<int:usuario_id>', methods=['POST'])
+def excluir_usuario(usuario_id: int):
+    if not session.get('logado'):
+        flash('Faça login para acessar o sistema.', 'warning')
+        return redirect(url_for('login'))
+
+    removido = False
+
+    # Remove da lista "fixa" em memória (enquanto o servidor estiver rodando).
+    global usuarios_db
+    antes = len(usuarios_db)
+    usuarios_db = [u for u in usuarios_db if int(u.get('id', 0)) != usuario_id]
+    if len(usuarios_db) != antes:
+        removido = True
+
+    # Remove da sessão (onde ficam os usuários criados via formulário).
+    usuarios_session = session.get('usuarios', [])
+    antes_sessao = len(usuarios_session)
+    usuarios_session = [u for u in usuarios_session if int(u.get('id', 0)) != usuario_id]
+    if len(usuarios_session) != antes_sessao:
+        session['usuarios'] = usuarios_session
+        session.modified = True
+        removido = True
+
+    if removido:
+        flash('Usuário excluído com sucesso!', 'success')
+    else:
+        flash('Usuário não encontrado.', 'warning')
+
+    return redirect(url_for('listar_usuarios'))
 
 @app.route('/usuarios/inserir', methods=['GET', 'POST'])
 def inserir_usuario():
+    if not session.get('logado'):
+        flash('Faça login para acessar o sistema.', 'warning')
+        return redirect(url_for('login'))
     if request.method == 'POST':
         # Processa envio do formulário (POST).
         # Validação simples (campos obrigatórios).
         nome = request.form.get('nome')
         email = request.form.get('email')
         senha = request.form.get('senha')
+        perfil = request.form.get('perfil') or 'Cliente'
 
         if not nome or not email or not senha:
             # Se algum campo obrigatório estiver vazio, avisa e mantém no formulário.
             flash('Preencha os campos obrigatórios.', 'danger')
             return render_template('usuarios/inserir_usuario.html')
             
-        # Como é projeto simulado, não salvamos de fato, só exibimos sucesso.
+        # Gravar na sessão (mesmo esquema do seu exemplo).
+        if 'usuarios' not in session:
+            session['usuarios'] = []
+
+        existentes = usuarios_db + session.get('usuarios', [])
+        proximo_id = (max([u.get('id', 0) for u in existentes]) + 1) if existentes else 1
+
+        novo_usuario = {
+            'id': proximo_id,
+            'nome': nome,
+            'email': email,
+            'perfil': perfil
+        }
+
+        session['usuarios'].append(novo_usuario)
+        session.modified = True
+
         flash('Usuário salvo com sucesso!', 'success')
         return redirect(url_for('listar_usuarios'))
         
@@ -144,27 +211,93 @@ def inserir_usuario():
 
 @app.route('/produtos/listar')
 def listar_produtos():
-    # Lista produtos simulados.
-    return render_template('produtos2/listar_produtos2.html', produtos=produtos_db)
+    if not session.get('logado'):
+        flash('Faça login para acessar o sistema.', 'warning')
+        return redirect(url_for('login'))
+    # Lista produtos simulados + produtos gravados na sessão.
+    produtos_session = session.get('produtos', [])
+    produtos = produtos_db + produtos_session
+    return render_template('produtos/listar_produtos.html', produtos=produtos)
+
+@app.route('/produtos/excluir/<int:produto_id>', methods=['POST'])
+def excluir_produto(produto_id: int):
+    if not session.get('logado'):
+        flash('Faça login para acessar o sistema.', 'warning')
+        return redirect(url_for('login'))
+
+    removido = False
+
+    # Remove da lista "fixa" em memória (enquanto o servidor estiver rodando).
+    global produtos_db
+    antes = len(produtos_db)
+    produtos_db = [p for p in produtos_db if int(p.get('id', 0)) != produto_id]
+    if len(produtos_db) != antes:
+        removido = True
+
+    # Remove da sessão (onde ficam os produtos criados via formulário).
+    produtos_session = session.get('produtos', [])
+    antes_sessao = len(produtos_session)
+    produtos_session = [p for p in produtos_session if int(p.get('id', 0)) != produto_id]
+    if len(produtos_session) != antes_sessao:
+        session['produtos'] = produtos_session
+        session.modified = True
+        removido = True
+
+    if removido:
+        flash('Produto excluído com sucesso!', 'success')
+    else:
+        flash('Produto não encontrado.', 'warning')
+
+    return redirect(url_for('listar_produtos'))
 
 @app.route('/produtos/inserir', methods=['GET', 'POST'])
 def inserir_produto():
+    if not session.get('logado'):
+        flash('Faça login para acessar o sistema.', 'warning')
+        return redirect(url_for('login'))
     if request.method == 'POST':
         # Processa envio do formulário de produto.
         nome = request.form.get('nome')
         preco = request.form.get('preco')
+        estoque = request.form.get('estoque')
 
         if not nome or preco is None or preco == '':
             # Validação mínima do que é obrigatório no formulário.
             flash('Preencha os campos obrigatórios.', 'danger')
-            return render_template('produtos2/inserir_produtos2.html')
+            return render_template('produtos/inserir_produtos.html')
             
-        # Como é projeto simulado, não persistimos os dados.
+        if 'produtos' not in session:
+            session['produtos'] = []
+
+        try:
+            preco_float = float(preco)
+        except (TypeError, ValueError):
+            flash('Preço inválido.', 'danger')
+            return render_template('produtos/inserir_produtos.html')
+
+        try:
+            estoque_int = int(estoque) if estoque not in (None, '') else 0
+        except (TypeError, ValueError):
+            estoque_int = 0
+
+        existentes = produtos_db + session.get('produtos', [])
+        proximo_id = (max([p.get('id', 0) for p in existentes]) + 1) if existentes else 1
+
+        novo_produto = {
+            'id': proximo_id,
+            'nome': nome,
+            'preco': round(preco_float, 2),
+            'estoque': estoque_int
+        }
+
+        session['produtos'].append(novo_produto)
+        session.modified = True
+
         flash('Produto cadastrado com sucesso!', 'success')
         return redirect(url_for('listar_produtos'))
         
     # Se GET, exibe o formulário.
-    return render_template('produtos2/inserir_produtos2.html')
+    return render_template('produtos/inserir_produtos.html')
 
 # --------------------------------------------------------------------
 # CATEGORIAS
@@ -172,24 +305,49 @@ def inserir_produto():
 
 @app.route('/categorias/listar')
 def listar_categorias():
-    # Lista categorias simuladas.
-    return render_template('categoria3/listar_categoria3.html', categorias=categorias_db)
+    if not session.get('logado'):
+        flash('Faça login para acessar o sistema.', 'warning')
+        return redirect(url_for('login'))
+    # Lista categorias simuladas + categorias gravadas na sessão.
+    categorias_session = session.get('categorias', [])
+    categorias = categorias_db + categorias_session
+    return render_template('categorias/listar_categorias.html', categorias=categorias)
 
 @app.route('/categorias/inserir', methods=['GET', 'POST'])
 def inserir_categoria():
+    if not session.get('logado'):
+        flash('Faça login para acessar o sistema.', 'warning')
+        return redirect(url_for('login'))
     if request.method == 'POST':
         # Processa envio do formulário de categoria.
-        if not request.form.get('nome'):
+        nome = request.form.get('nome')
+        descricao = request.form.get('descricao') or ''
+
+        if not nome:
             # Validação mínima: nome é obrigatório.
             flash('O nome da categoria é obrigatório.', 'warning')
-            return render_template('categoria3/inserir_categoria3.html')
-            
-        # Como é projeto simulado, não persistimos no array.
+            return render_template('categorias/inserir_categorias.html')
+
+        if 'categorias' not in session:
+            session['categorias'] = []
+
+        existentes = categorias_db + session.get('categorias', [])
+        proximo_id = (max([c.get('id', 0) for c in existentes]) + 1) if existentes else 1
+
+        nova_categoria = {
+            'id': proximo_id,
+            'nome': nome,
+            'descricao': descricao
+        }
+
+        session['categorias'].append(nova_categoria)
+        session.modified = True
+
         flash('Categoria criada!', 'success')
         return redirect(url_for('listar_categorias'))
         
     # Se GET, exibe o formulário.
-    return render_template('categoria3/inserir_categoria3.html')
+    return render_template('categorias/inserir_categorias.html')
 
 # --------------------------------------------------------------------
 # EQUIPE (layout próprio, sem herança de base)
@@ -197,8 +355,11 @@ def inserir_categoria():
 
 @app.route('/equipe')
 def equipe():
+    if not session.get('logado'):
+        flash('Faça login para acessar o sistema.', 'warning')
+        return redirect(url_for('login'))
     # Não usa herança de template conforme regra
-    return render_template('sobre.html')
+    return render_template('sobre_equipe.html')
 
 if __name__ == '__main__':
     # debug=True facilita durante o desenvolvimento (auto-recarrega).
