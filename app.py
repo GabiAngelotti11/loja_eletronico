@@ -15,7 +15,7 @@ app = Flask(__name__)
 app.secret_key = 'chave_secreta_super_segura_para_o_trabalho'
 
 # --------------------------------------------------------------------
-# DADOS SIMULADOS (listas em memória)
+# DADOS SIMULADOS
 # --------------------------------------------------------------------
 
 # "Tabela" 1: Usuários (mínimo 5 registros)
@@ -52,6 +52,12 @@ categorias_db = [
 # Rota da página inicial (/)
 @app.route('/', endpoint='index')
 def pagina_inicial():
+    """
+    Renderiza a página inicial pública do sistema.
+
+    - **Método**: GET
+    - **Saída**: HTML (`templates/index.html`)
+    """
     # Página inicial vitrine.
     # Usa `templates/index.html`, que herda `base_publica.html`.
     return render_template('index.html')
@@ -59,6 +65,13 @@ def pagina_inicial():
 # Login (GET para exibir formulário, POST para processar envio)
 @app.route('/login', methods=['GET', 'POST'])
 def login():
+    """
+    Exibe e processa o login (simulado).
+
+    - **GET**: mostra o formulário de login.
+    - **POST**: valida se `email` e `senha` foram preenchidos e, se sim,
+      marca o usuário como logado via `session['logado']` e redireciona.
+    """
     if request.method == 'POST':
         # Simula a verificação de login (sem autenticação real).
         email = request.form.get('email')
@@ -79,6 +92,13 @@ def login():
 # Cadastro de novo usuário (GET para exibir, POST para processar envio)
 @app.route('/cadastro', methods=['GET', 'POST'])
 def cadastro():
+    """
+    Exibe e processa o cadastro de usuário (simulado, sem persistência).
+
+    - **GET**: mostra o formulário de cadastro.
+    - **POST**: valida campos obrigatórios e se as senhas conferem.
+      Em caso de sucesso, redireciona para o login.
+    """
     if request.method == 'POST':
         # Simula o processamento do cadastro (sem persistir dados).
         nome = request.form.get('nome')
@@ -109,6 +129,11 @@ def cadastro():
 # Logout (simulado)
 @app.route('/logout')
 def logout():
+    """
+    Encerra a sessão do usuário (simulado).
+
+    Limpa todos os dados em `session` e redireciona para a tela de login.
+    """
     # Simula encerramento de sessão e redireciona para login.
     session.clear()
     flash('Sessão encerrada.', 'info')
@@ -125,6 +150,13 @@ def logout():
 
 @app.route('/usuarios/listar')
 def listar_usuarios():
+    """
+    Lista usuários disponíveis no sistema (dados fixos + dados em sessão).
+
+    - Exige `session['logado']` (proteção simulada).
+    - Combina `usuarios_db` (memória) com `session['usuarios']` (cadastros via formulário).
+    - Renderiza `templates/usuarios/listar_usuarios.html`.
+    """
     if not session.get('logado'):
         flash('Faça login para acessar o sistema.', 'warning')
         return redirect(url_for('login'))
@@ -135,6 +167,13 @@ def listar_usuarios():
 
 @app.route('/usuarios/excluir/<int:usuario_id>', methods=['POST'])
 def excluir_usuario(usuario_id: int):
+    """
+    Exclui um usuário pelo `usuario_id` (simulado).
+
+    - Remove tanto do `usuarios_db` (lista em memória) quanto de `session['usuarios']`
+      (lista criada via formulário).
+    - Mostra feedback via `flash` e redireciona para a listagem.
+    """
     if not session.get('logado'):
         flash('Faça login para acessar o sistema.', 'warning')
         return redirect(url_for('login'))
@@ -166,6 +205,13 @@ def excluir_usuario(usuario_id: int):
 
 @app.route('/usuarios/inserir', methods=['GET', 'POST'])
 def inserir_usuario():
+    """
+    Exibe e processa o formulário de cadastro de usuário (proteção simulada).
+
+    - **GET**: mostra o formulário.
+    - **POST**: valida campos obrigatórios e salva o novo usuário em `session['usuarios']`
+      com um `id` incremental baseado no maior id existente.
+    """
     if not session.get('logado'):
         flash('Faça login para acessar o sistema.', 'warning')
         return redirect(url_for('login'))
@@ -211,6 +257,13 @@ def inserir_usuario():
 
 @app.route('/produtos/listar')
 def listar_produtos():
+    """
+    Lista produtos disponíveis no sistema (dados fixos + dados em sessão).
+
+    - Exige `session['logado']` (proteção simulada).
+    - Combina `produtos_db` (memória) com `session['produtos']` (cadastros via formulário).
+    - Renderiza `templates/produtos/listar_produtos.html`.
+    """
     if not session.get('logado'):
         flash('Faça login para acessar o sistema.', 'warning')
         return redirect(url_for('login'))
@@ -221,6 +274,13 @@ def listar_produtos():
 
 @app.route('/produtos/excluir/<int:produto_id>', methods=['POST'])
 def excluir_produto(produto_id: int):
+    """
+    Exclui um produto pelo `produto_id` (simulado).
+
+    - Remove tanto de `produtos_db` (lista em memória) quanto de `session['produtos']`
+      (lista criada via formulário).
+    - Mostra feedback via `flash` e redireciona para a listagem.
+    """
     if not session.get('logado'):
         flash('Faça login para acessar o sistema.', 'warning')
         return redirect(url_for('login'))
@@ -252,6 +312,13 @@ def excluir_produto(produto_id: int):
 
 @app.route('/produtos/inserir', methods=['GET', 'POST'])
 def inserir_produto():
+    """
+    Exibe e processa o formulário de cadastro de produto (proteção simulada).
+
+    - **GET**: mostra o formulário.
+    - **POST**: valida campos mínimos, converte `preco` para float e `estoque` para int,
+      gera `id` incremental e salva em `session['produtos']`.
+    """
     if not session.get('logado'):
         flash('Faça login para acessar o sistema.', 'warning')
         return redirect(url_for('login'))
@@ -305,6 +372,13 @@ def inserir_produto():
 
 @app.route('/categorias/listar')
 def listar_categorias():
+    """
+    Lista categorias disponíveis no sistema (dados fixos + dados em sessão).
+
+    - Exige `session['logado']` (proteção simulada).
+    - Combina `categorias_db` (memória) com `session['categorias']` (cadastros via formulário).
+    - Renderiza `templates/categorias/listar_categorias.html`.
+    """
     if not session.get('logado'):
         flash('Faça login para acessar o sistema.', 'warning')
         return redirect(url_for('login'))
@@ -313,8 +387,52 @@ def listar_categorias():
     categorias = categorias_db + categorias_session
     return render_template('categorias/listar_categorias.html', categorias=categorias)
 
+@app.route('/categorias/excluir/<int:categoria_id>', methods=['POST'])
+def excluir_categoria(categoria_id: int):
+    """
+    Exclui uma categoria pelo `categoria_id` (simulado).
+
+    - Remove tanto de `categorias_db` (lista em memória) quanto de `session['categorias']`
+      (lista criada via formulário).
+    - Mostra feedback via `flash` e redireciona para a listagem.
+    """
+    if not session.get('logado'):
+        flash('Faça login para acessar o sistema.', 'warning')
+        return redirect(url_for('login'))
+
+    removido = False
+
+    # Remove da lista "fixa" em memória (enquanto o servidor estiver rodando).
+    global categorias_db
+    antes = len(categorias_db)
+    categorias_db = [c for c in categorias_db if int(c.get('id', 0)) != categoria_id]
+    if len(categorias_db) != antes:
+        removido = True
+
+    # Remove da sessão (onde ficam as categorias criadas via formulário).
+    categorias_session = session.get('categorias', [])
+    antes_sessao = len(categorias_session)
+    categorias_session = [c for c in categorias_session if int(c.get('id', 0)) != categoria_id]
+    if len(categorias_session) != antes_sessao:
+        session['categorias'] = categorias_session
+        session.modified = True
+        removido = True
+
+    if removido:
+        flash('Categoria excluída com sucesso!', 'success')
+    else:
+        flash('Categoria não encontrada.', 'warning')
+
+    return redirect(url_for('listar_categorias'))
+
 @app.route('/categorias/inserir', methods=['GET', 'POST'])
 def inserir_categoria():
+    """
+    Exibe e processa o formulário de cadastro de categoria (proteção simulada).
+
+    - **GET**: mostra o formulário.
+    - **POST**: valida `nome`, gera `id` incremental e salva em `session['categorias']`.
+    """
     if not session.get('logado'):
         flash('Faça login para acessar o sistema.', 'warning')
         return redirect(url_for('login'))
@@ -355,6 +473,12 @@ def inserir_categoria():
 
 @app.route('/equipe')
 def equipe():
+    """
+    Renderiza a página "Sobre a equipe" (protegida, simulada).
+
+    - Exige `session['logado']`.
+    - Retorna `templates/sobre_equipe.html` (sem herdar base, conforme regra do projeto).
+    """
     if not session.get('logado'):
         flash('Faça login para acessar o sistema.', 'warning')
         return redirect(url_for('login'))

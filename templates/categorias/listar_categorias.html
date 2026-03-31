@@ -1,13 +1,18 @@
 {% extends "base.html" %}
 
-<!-- Página de listagem de categorias -->
+<!--
+  Template: listagem de categorias.
+  Responsabilidade: mostrar uma tabela com a lista `categorias` recebida do backend
+  e expor ações de interface (link para inserir e formulário POST para excluir).
+-->
 {% block conteudo %}
+<!-- Cabeçalho da página: título + CTA para criar nova categoria -->
 <div class="d-flex justify-content-between align-items-center mb-4">
     <h2>Categorias do Sistema</h2>
     <a href="{{ url_for('inserir_categoria') }}" class="btn btn-primary">+ Nova Categoria</a>
 </div>
 
-<!-- Tabela Bootstrap usando os dados simulados `categorias` -->
+<!-- Tabela Bootstrap usando a lista `categorias` passada pela rota -->
 <div class="tabela-container">
     <table class="table table-hover table-bordered align-middle">
         <thead class="table-dark">
@@ -19,16 +24,20 @@
             </tr>
         </thead>
         <tbody>
-            <!-- Itera a lista de categorias -->
+            <!-- Loop Jinja: para cada categoria, renderiza uma linha -->
             {% for c in categorias %}
             <tr>
                 <td>{{ c.id }}</td>
                 <td class="fw-bold">{{ c.nome }}</td>
                 <td>{{ c.descricao }}</td>
                 <td class="text-center">
-                    <!-- Botões visuais (edição/exclusão não implementadas) -->
-                    <button class="btn btn-sm btn-outline-primary">Editar</button>
-                    <button class="btn btn-sm btn-outline-danger" onclick="return confirmarExclusao();">Excluir</button>
+                    <!--
+                      Ação "Excluir": faz POST para a rota `excluir_categoria`.
+                      O `onsubmit` chama `confirmarExclusao()` (JS esperado no layout/base).
+                    -->
+                    <form action="{{ url_for('excluir_categoria', categoria_id=c.id) }}" method="POST" class="d-inline" onsubmit="return confirmarExclusao();">
+                        <button type="submit" class="btn btn-sm btn-outline-danger">Excluir</button>
+                    </form>
                 </td>
             </tr>
             {% endfor %}
